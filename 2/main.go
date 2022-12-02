@@ -30,34 +30,72 @@ func main() {
 		score += getScore(v)
 	}
 	fmt.Printf("score: %v\n", score)
+	test()
+}
+
+func test() {
+	fmt.Println("-----------------")
+	res1 := getScore([]string{"A", "Y"})
+	fmt.Printf("res1: %v\n", res1)
+	res2 := getScore([]string{"B", "X"})
+	fmt.Printf("res2: %v\n", res2)
+	res3 := getScore([]string{"C", "Z"})
+	fmt.Printf("res3: %v\n", res3)
+}
+
+func getScore(match []string) (points int) {
+	elfPick, desiredResult := match[0], match[1]
+	player := getPlayerChoice(elfPick, desiredResult)
+	x := baseScore(player)
+	points += x
+	x1 := wld(elfPick, player)
+	points += x1
+	fmt.Printf("base: %v\n", x)
+	fmt.Printf("wld: %v\n", x1)
+	return
+}
+
+func getPlayerChoice(elfPick string, desired string) (choice string) {
+	switch desired {
+	case "X":
+		switch elfPick {
+		case "A":
+			choice = "C"
+		case "B":
+			choice = "A"
+		case "C":
+			choice = "B"
+		}
+	case "Y":
+		choice = elfPick
+	case "Z":
+		switch elfPick {
+		case "A":
+			choice = "B"
+		case "B":
+			choice = "C"
+		case "C":
+			choice = "A"
+		}
+	}
+	return
 }
 
 func baseScore(str string) (points int) {
 	switch str {
-	case "X":
+	case "A":
 		points = 1
-	case "Y":
+	case "B":
 		points = 2
-	case "Z":
+	case "C":
 		points = 3
 	}
 	return
 }
 
-func getScore(match []string) (points int) {
-	elfPick, playerPick := match[0], match[1]
-	x := baseScore(playerPick)
-	points += x
-	fmt.Printf("x: %v\n", x)
-	x1 := wld(elfPick, playerPick)
-	points += x1
-	fmt.Printf("x1: %v\n", x1)
-	return
-}
-
 func wld(elfPick string, playerPick string) (playerScore int) {
 	switch playerPick {
-	case "X":
+	case "A":
 		if elfPick == "A" {
 			playerScore = 3
 		}
@@ -67,7 +105,7 @@ func wld(elfPick string, playerPick string) (playerScore int) {
 		if elfPick == "C" {
 			playerScore = 6
 		}
-	case "Y":
+	case "B":
 		if elfPick == "A" {
 			playerScore = 6
 		}
@@ -77,7 +115,7 @@ func wld(elfPick string, playerPick string) (playerScore int) {
 		if elfPick == "C" {
 			playerScore = 0
 		}
-	case "Z":
+	case "C":
 		if elfPick == "A" {
 			playerScore = 0
 		}
