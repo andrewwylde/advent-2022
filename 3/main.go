@@ -7,18 +7,6 @@ import (
 	"strings"
 )
 
-const (
-	Rock     = 1
-	Paper    = 2
-	Scissors = 3
-	A        = "Rock"
-	B        = "Paper"
-	C        = "Scissors"
-	X        = "Rock"
-	Y        = "Paper"
-	Z        = "Scissors"
-)
-
 func test() {
 	testInput := `vJrwpWtwJgWrhcsFMMfFFhFp
 jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
@@ -32,11 +20,11 @@ CrZsJsPPZsGzwwsLwLmpwMDw`
 		end := start + 3
 		x1 := x[start:end]
 		r := parseGroup(x1)
-		fmt.Printf("x1: %v\n", x1)
-		fmt.Printf("start: %v\n", start)
-		fmt.Printf("end: %v\n", end)
+		// fmt.Printf("x1: %v\n", x1)
+		// fmt.Printf("start: %v\n", start)
+		// fmt.Printf("end: %v\n", end)
 
-		fmt.Printf("r: %v %s \n", r, string(r))
+		// fmt.Printf("r: %v %s \n", r, string(r))
 		sum += int(runeToPriority(r))
 	}
 

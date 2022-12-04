@@ -30,7 +30,7 @@ func main() {
 		score += getScore(v)
 	}
 	fmt.Printf("score: %v\n", score)
-	test()
+	// test()
 }
 
 func test() {
@@ -50,8 +50,8 @@ func getScore(match []string) (points int) {
 	points += x
 	x1 := wld(elfPick, player)
 	points += x1
-	fmt.Printf("base: %v\n", x)
-	fmt.Printf("wld: %v\n", x1)
+	// fmt.Printf("base: %v\n", x)
+	// fmt.Printf("wld: %v\n", x1)
 	return
 }
 
