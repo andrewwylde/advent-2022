@@ -25,45 +25,49 @@ jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
 PmmdzqPrVvPwwTWBwg
 wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
 ttgJtRGJQctTZtZT
-CrZsJsPPZsGzwwsLwLmpwMDw
-`
-	fmt.Printf("testInput: %v\n", testInput)
+CrZsJsPPZsGzwwsLwLmpwMDw`
 	x := splitByLine(testInput)
 	sum := 0
-	for _, v := range x {
-		r := parseLine((v))
+	for start := 0; start < len(x); start += 3 {
+		end := start + 3
+		x1 := x[start:end]
+		r := parseGroup(x1)
+		fmt.Printf("x1: %v\n", x1)
+		fmt.Printf("start: %v\n", start)
+		fmt.Printf("end: %v\n", end)
+
+		fmt.Printf("r: %v %s \n", r, string(r))
 		sum += int(runeToPriority(r))
-		fmt.Printf("priority: %v\n", runeToPriority(r))
 	}
+
 	fmt.Printf("sum: %v\n", sum)
 
 }
 
-func parseLine(v string) rune {
-	fmt.Printf("v: %v\n", v)
-	strLen := len(v)
-	mid := strLen / 2
-	lm := make(map[int32]int32)
-	rm := make(map[int32]int32)
-	foundRune := rune(0)
-
-	for i, _ := range strings.Split(v, "")[0:mid] {
-		lp := rune(v[i])
-		rp := rune(v[mid+i])
-		if lm[lp] == 0 {
-			lm[lp] = 1
-		}
-		if rm[rp] == 0 {
-			rm[rp] = 1
-		}
-		if lm[rp] != 0 {
-			foundRune = rp
-		}
-		if rm[lp] != 0 {
-			foundRune = lp
+func parseGroup(s []string) (r rune) {
+	rootmap := make(map[rune]int)
+	for _, v := range s {
+		r := parseSack(v)
+		for k, v2 := range r {
+			rootmap[k] += v2
 		}
 	}
-	return foundRune
+	for k, v := range rootmap {
+		if v == 3 {
+			r = k
+		}
+	}
+	return
+}
+
+func parseSack(v string) map[rune]int {
+	m := make(map[rune]int)
+	for _, v2 := range v {
+		// fmt.Printf("rune in sack: %v %s\n", v2, string(v2))
+		m[v2] = 1
+	}
+
+	return m
 }
 
 func runeToPriority(r rune) int32 {
@@ -88,6 +92,7 @@ func splitByLine(t string) []string {
 }
 
 func main() {
+	test()
 
 	d, _ := os.Getwd()
 	p := path.Join(d, "3", "input.txt")
@@ -95,10 +100,9 @@ func main() {
 
 	x := splitByLine(string(f))
 	sum := 0
-	for _, v := range x {
-		r := parseLine((v))
+	for i := 0; i < len(x); i += 3 {
+		r := parseGroup(x[i : i+3])
 		sum += int(runeToPriority(r))
-		fmt.Printf("priority: %v\n", runeToPriority(r))
 	}
 	fmt.Printf("sum: %v\n", sum)
 
