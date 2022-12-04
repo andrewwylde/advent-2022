@@ -22,3 +22,10 @@ func GetInputByDay(day string) (f []byte) {
 	f, _ = os.ReadFile(p)
 	return
 }
+
+func GetTestInputByDay(day string) (f []byte) {
+	d, _ := os.Getwd()
+	p := path.Join(d, day, "testInput.txt")
+	f, _ = os.ReadFile(p)
+	return
+}

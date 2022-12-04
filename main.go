@@ -18,13 +18,14 @@ func main() {
 			}
 		}
 	}
-	if len(args) == 1 {
-		runDay(path.Join(dir, args[0]))
-	}
+	runDay(path.Join(dir, args[0]))
+
 }
 
 func runDay(day string) (err error) {
-	cmd := exec.Command("go", "run", day)
+	args := []string{"run", day}
+	args = append(args, os.Args...)
+	cmd := exec.Command("go", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
