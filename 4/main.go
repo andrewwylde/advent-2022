@@ -13,8 +13,8 @@ func test() {
 	input := elfutils.GetTestInputByDay("4")
 	lines := elfutils.SplitByLine(string(input))
 	result := getPairCount(lines)
-	if result != 2 {
-		log.Fatalf("Test failed! Expected 2, got %v", result)
+	if result != 4 {
+		log.Fatalf("Test failed! Expected 4, got %v", result)
 	} else {
 		fmt.Printf("result: %v\n", result)
 	}
@@ -24,17 +24,20 @@ func getPairCount(input []string) (sum int) {
 
 	for _, v := range input {
 		elves := strings.Split(v, ",")
-		elf1 := getStartEnd(elves[0])
-		elf2 := getStartEnd(elves[1])
-
+		a := getStartEnd(elves[0])
+		b := getStartEnd(elves[1])
+		/*
+		   elf has cross over if their ranges overlap at all.
+		   overlap - startA <= endB OR if endA
+		*/
 		if elves[0] == elves[1] {
+			fmt.Printf("same")
 			sum += 1
 		} else {
 
-			if compareAss(elf1, elf2) {
-				sum += 1
-			}
-			if compareAss(elf2, elf1) {
+			x := compareAss(a, b)
+			logShit(a, b, x)
+			if x {
 				sum += 1
 			}
 		}
@@ -43,13 +46,28 @@ func getPairCount(input []string) (sum int) {
 	return
 }
 
+func logShit(a Assignment, b Assignment, x bool) {
+	fmt.Printf("x: %v\n", x)
+}
+
 func compareAss(a Assignment, b Assignment) bool {
-	return a.start <= b.start && a.end >= b.end
+	fmt.Printf("a: %+v\n", a)
+	fmt.Printf("b: %+v\n", b)
+	if b.start <= a.end && b.end >= a.start {
+		fmt.Printf("b start <= a.end")
+		return true
+	}
+	if a.start <= b.end && a.end >= b.start {
+		fmt.Printf("a start <= b.end")
+		return true
+	}
+	return false
+
 }
 
 type Assignment struct {
-	start int
-	end   int
+	start float64
+	end   float64
 }
 
 func getStartEnd(elf string) (ass Assignment) {
@@ -59,17 +77,17 @@ func getStartEnd(elf string) (ass Assignment) {
 			if err != nil {
 				log.Fatalf(err.Error())
 			}
-			ass.start = start
+			ass.start = float64(start)
 		} else {
 			end, err := strconv.Atoi(v)
 			if err != nil {
 				log.Fatalf(err.Error())
 			}
-			ass.end = end
+			ass.end = float64(end)
 
 		}
 	}
-	return
+	return ass
 }
 
 func main() {
