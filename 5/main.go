@@ -74,7 +74,7 @@ func doMoves(moves []string, stacks [][]string) (result []string) {
 	r := regexp.MustCompile(`move (\d{1,2}) from (\d{1,2}) to (\d{1,2})`)
 	for _, v := range moves {
 		// fmt.Printf("move: %v\n", v)
-		// fmt.Printf("stacks: %v\n", stacks)
+		fmt.Printf("stacks: %v\n", stacks)
 		// fmt.Println("--------")
 		m := r.FindStringSubmatch(v)[1:]
 		count, _ := strconv.Atoi(m[0])
@@ -82,18 +82,20 @@ func doMoves(moves []string, stacks [][]string) (result []string) {
 		from := x - 1
 		x1, _ := strconv.Atoi(m[2])
 		to := x1 - 1
+
+		itemsToMove := []string{}
 		for i := 0; i < count; i++ {
 			// fmt.Printf("count: %v\n", count)
 			// fmt.Printf("from: %v\n", from)
 			// fmt.Printf("to: %v\n", to)
 			fromStack := stacks[from]
-			toStack := stacks[to]
 			// fmt.Printf("fromStack: %v\n", fromStack)
 			// fmt.Printf("toStack: %v\n", toStack)
 			item := fromStack[0]
 			stacks[from] = fromStack[1:]
-			stacks[to] = append([]string{item}, toStack...)
+			itemsToMove = append(itemsToMove, item)
 		}
+		stacks[to] = append(itemsToMove, stacks[to]...)
 	}
 	for _, v := range stacks {
 		result = append(result, v[0])
