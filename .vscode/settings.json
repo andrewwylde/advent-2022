@@ -1,0 +1,10 @@
+{
+  "filewatcher.commands": [
+    {
+      "match": "\\.go*",
+      "isAsync": true,
+      "cmd": "(cd ${workspaceRoot} && go run . 8 test)",
+      "event": "onFileChange"
+    }
+  ]
+}
