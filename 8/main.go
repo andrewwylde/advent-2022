@@ -2,11 +2,14 @@ package main
 
 import (
 	"advent/elfutils"
+	// "encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ttacon/chalk"
 )
 
 func unique(chars []string) bool {
@@ -23,7 +26,7 @@ func unique(chars []string) bool {
 
 // write a func
 
-func treeScore(treeHeight int, tlrb [][]int) (score int) {
+func TreeScore(treeHeight int, tlrb [][]int) (score int) {
 	score = 1
 
 	// for each direction, count the number of trees that are shorter than the current tree
@@ -45,6 +48,8 @@ func treeScore(treeHeight int, tlrb [][]int) (score int) {
 	return score
 }
 
+//
+
 func getShorterTrees(directionSlice []int, treeHeight int) []int {
 	for i, v2 := range directionSlice {
 		if v2 >= treeHeight {
@@ -60,12 +65,12 @@ func prepend(arr []int, element int) []int {
 
 // generate a struct
 type Tree struct {
-	height int `json:"height"`
+	Height int `json:"height"`
 	score  int
-	up     []int `json:"up"`
-	down   []int `json:"down"`
-	left   []int `json:"left"`
-	right  []int `json:"right"`
+	Up     []int `json:"up"`
+	Down   []int `json:"down"`
+	Left   []int `json:"left"`
+	Right  []int `json:"right"`
 }
 
 func doWork(lines []string) (result int) {
@@ -95,7 +100,7 @@ func doWork(lines []string) (result int) {
 					up = prepend(up, compareVal)
 				}
 				if compareRow > row {
-					down = prepend(down, compareVal)
+					down = append(down, compareVal)
 				}
 			}
 
@@ -109,27 +114,46 @@ func doWork(lines []string) (result int) {
 				right = append(right, compareTreeInt)
 			}
 
-			score := treeScore(treeHeightInt, [][]int{up, right, left, down})
-			tree := Tree{treeHeightInt, score, up, down, left, right}
+			score := TreeScore(treeHeightInt, [][]int{up, right, left, down})
+			x := getShorterTrees(up, treeHeightInt)
+			x1 := getShorterTrees(down, treeHeightInt)
+			x2 := getShorterTrees(left, treeHeightInt)
+			x3 := getShorterTrees(right, treeHeightInt)
+			// tree := Tree{treeHeightInt, score, x, x1, x2, x3}
+
 			if score > result {
 				result = score
-				fmt.Printf("tree: %v\n", tree)
-				fmt.Printf("score: %v\n", score)
+				fmt.Printf("x: %v\n", x)
+				fmt.Printf("x1: %v\n", x1)
+				fmt.Printf("x2: %v\n", x2)
+				fmt.Printf("x3: %v\n", x3)
+				highlightGrid(lines, row, col)
+				// treeJSONIndented, _ := json.Marshal(tree)
+				// fmt.Printf("%s%v\n", chalk.Bold.TextStyle("Tree:"), string(treeJSONIndented))
 				println("--------------------------------------------------")
 			}
+
+			// logging bullshit
+			// fmt.Printf("%s%v\n", chalk.Bold.TextStyle("Tree:"), tree)
+			// fmt.Printf("%s%v\n", chalk.Bold.TextStyle("Score:"), score)
 		}
 	}
 
-	// printshit()
-
-	// fmt.Printf("treeMap: %v\n", treeMap)
-	// fmt.Printf("tree: %v\n", tree.height)
-	// fmt.Printf("left: %v\n", tree.left)
-	// fmt.Printf("right: %v\n", tree.right)
-	// fmt.Printf("up: %v\n", tree.up)
-	// fmt.Printf("down: %v\n", tree.down)
-
 	return
+}
+
+// highlight a string in a grid
+func highlightGrid(grid []string, x int, y int) {
+	for i, row := range grid {
+		for j, col := range row {
+			if i == x && j == y {
+				fmt.Printf("%s", chalk.Bold.TextStyle(string(col)))
+			} else {
+				fmt.Printf("%s", string(col))
+			}
+		}
+		fmt.Printf("\n")
+	}
 }
 
 func test(day string) {
