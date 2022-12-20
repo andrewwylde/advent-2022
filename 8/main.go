@@ -21,10 +21,55 @@ func unique(chars []string) bool {
 	return true
 }
 
-func doWork(lines []string) (result int) {
-	// fmt.Printf("doWork!\n")
+// write a func
 
-	result += (len(lines)*2 + (len(lines[0])-2)*2)
+func treeScore(treeHeight int, tlrb [][]int) (score int) {
+	score = 1
+
+	// for each direction, count the number of trees that are shorter than the current tree
+	for _, directionSlice := range tlrb {
+		if len(directionSlice) == 0 {
+			// at edge
+			return 0
+		}
+		shorterTrees := getShorterTrees(directionSlice, treeHeight)
+		// fmt.Printf("trees shorter than %v: %v\n", treeHeight, shorterTrees)
+		rowScore := len(shorterTrees)
+		if rowScore == 0 {
+			continue
+		}
+
+		score *= rowScore
+	}
+
+	return score
+}
+
+func getShorterTrees(directionSlice []int, treeHeight int) []int {
+	for i, v2 := range directionSlice {
+		if v2 >= treeHeight {
+			return directionSlice[:i+1]
+		}
+	}
+	return directionSlice
+}
+
+func prepend(arr []int, element int) []int {
+	return append([]int{element}, arr...)
+}
+
+// generate a struct
+type Tree struct {
+	height int `json:"height"`
+	score  int
+	up     []int `json:"up"`
+	down   []int `json:"down"`
+	left   []int `json:"left"`
+	right  []int `json:"right"`
+}
+
+func doWork(lines []string) (result int) {
+	result = 1
 
 	for row, treeLine := range lines {
 		if row == 0 || row == len(lines)-1 {
@@ -33,14 +78,13 @@ func doWork(lines []string) (result int) {
 		trees := strings.Split(treeLine, "")
 		for col, treeHeight := range trees {
 			treeHeightInt, _ := strconv.Atoi(treeHeight)
-			aboveTrees := []int{}
-			belowTrees := []int{}
-			leftTrees := []int{}
-			rightTrees := []int{}
+			up := []int{}
+			down := []int{}
+			left := []int{}
+			right := []int{}
 			if col == 0 || col == len(trees)-1 {
 				continue
 			}
-			// fmt.Printf("treeHeight: %v\n", treeHeight)
 
 			for compareRow, compareLine := range lines {
 				if compareRow == row {
@@ -48,51 +92,42 @@ func doWork(lines []string) (result int) {
 				}
 				compareVal, _ := strconv.Atoi(strings.Split(compareLine, "")[col])
 				if compareRow < row {
-					aboveTrees = append(aboveTrees, compareVal)
+					up = prepend(up, compareVal)
 				}
 				if compareRow > row {
-					belowTrees = append(belowTrees, compareVal)
+					down = prepend(down, compareVal)
 				}
 			}
 
 			for _, compareTree := range trees[0:col] {
 				compareTreeInt, _ := strconv.Atoi(compareTree)
-				leftTrees = append(leftTrees, compareTreeInt)
-			}
-			for _, compareTree := range trees[col+1:] {
-				compareTreeInt, _ := strconv.Atoi(compareTree)
-				rightTrees = append(rightTrees, compareTreeInt)
+				left = prepend(left, compareTreeInt)
 			}
 
-			// fmt.Printf("aboveTrees: %v\n", aboveTrees)
-			// fmt.Printf("belowTrees: %v\n", belowTrees)
-			// fmt.Printf("leftTrees: %v\n", leftTrees)
-			// fmt.Printf("rightTrees: %v\n", rightTrees)
-			visible := false
-			for _, treeList := range [][]int{aboveTrees, belowTrees, leftTrees, rightTrees} {
-				if visible == true {
-					break
-				}
-				isTallestTree := true
-				for _, v := range treeList {
-					if !isTallestTree {
-						break
-					}
-					if v >= treeHeightInt {
-						isTallestTree = false
-					}
-				}
-				if isTallestTree {
-					// fmt.Printf("%v is tallest in list %+v\n", treeHeightInt, treeList)
-					visible = true
-				}
+			for _, compareTree := range trees[col+1:] {
+				compareTreeInt, _ := strconv.Atoi(compareTree)
+				right = append(right, compareTreeInt)
 			}
-			if visible {
-				result++
+
+			score := treeScore(treeHeightInt, [][]int{up, right, left, down})
+			tree := Tree{treeHeightInt, score, up, down, left, right}
+			if score > result {
+				result = score
+				fmt.Printf("tree: %v\n", tree)
+				fmt.Printf("score: %v\n", score)
+				println("--------------------------------------------------")
 			}
-			// fmt.Printf("\n\n-----------------------\n\n")
 		}
 	}
+
+	// printshit()
+
+	// fmt.Printf("treeMap: %v\n", treeMap)
+	// fmt.Printf("tree: %v\n", tree.height)
+	// fmt.Printf("left: %v\n", tree.left)
+	// fmt.Printf("right: %v\n", tree.right)
+	// fmt.Printf("up: %v\n", tree.up)
+	// fmt.Printf("down: %v\n", tree.down)
 
 	return
 }
@@ -101,7 +136,7 @@ func test(day string) {
 	input := elfutils.GetTestInputByDay(day)
 	lines := elfutils.SplitByLine(string(input))
 	result := doWork(lines)
-	x := 21
+	x := 8
 	if result != x {
 		log.Fatalf("Test failed! Expected %v, got %v", x, result)
 	} else {
